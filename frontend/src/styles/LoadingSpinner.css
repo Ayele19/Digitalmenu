@@ -1,0 +1,67 @@
+/* ==========================================
+   LoadingSpinner styles
+   ========================================== */
+
+/* Keyframe animation */
+@keyframes spinner-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The spinning circle */
+.spinner-circle {
+  border-radius: 50%;
+  border: 3px solid #F5E6D3;
+  border-top-color: #6B3A2A;
+  animation: spinner-rotate 0.75s linear infinite;
+}
+
+/* Size variants */
+.spinner-sm {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-width: 2px;
+}
+
+.spinner-md {
+  width: 2rem;
+  height: 2rem;
+  border-width: 3px;
+}
+
+.spinner-lg {
+  width: 3rem;
+  height: 3rem;
+  border-width: 4px;
+}
+
+/* Centered-on-screen variant wrapper */
+.spinner-fullscreen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(253, 246, 236, 0.8);
+  z-index: 999;
+}
+
+/* Inline variant wrapper */
+.spinner-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Block centered variant wrapper */
+.spinner-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  width: 100%;
+}

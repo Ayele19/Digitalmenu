@@ -1,0 +1,71 @@
+/* ==========================================
+   CategoryFilter styles
+   ========================================== */
+
+.category-filter-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.category-filter-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.category-filter-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.25rem 0.125rem;
+  /* Prevent wrapping so it stays horizontally scrollable */
+  flex-wrap: nowrap;
+}
+
+/* Pill button base */
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+  line-height: 1;
+}
+
+.category-pill:focus-visible {
+  outline: 2px solid #6B3A2A;
+  outline-offset: 2px;
+}
+
+.category-pill:active {
+  transform: scale(0.96);
+}
+
+/* Inactive pill */
+.category-pill-inactive {
+  background-color: #ffffff;
+  color: #6B3A2A;
+  border-color: #e5e7eb;
+}
+
+.category-pill-inactive:hover {
+  background-color: #F5E6D3;
+  border-color: #C9A84C;
+}
+
+/* Active pill */
+.category-pill-active {
+  background-color: #6B3A2A;
+  color: #ffffff;
+  border-color: #C9A84C;
+}
+
+.category-pill-emoji {
+  font-size: 1rem;
+  line-height: 1;
+}

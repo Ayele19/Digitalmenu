@@ -1,0 +1,92 @@
+/* ==========================================
+   StatsCard styles
+   ========================================== */
+
+.stats-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #ffffff;
+  border-radius: 0.875rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f3f4f6;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.stats-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Icon wrapper — background tint driven by .stats-icon-{color} */
+.stats-icon-wrapper {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Color variants */
+.stats-icon-brown {
+  background-color: #F5E6D3;
+  color: #6B3A2A;
+}
+
+.stats-icon-green {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.stats-icon-blue {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.stats-icon-gold {
+  background-color: #fef9c3;
+  color: #b45309;
+}
+
+.stats-icon-red {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.stats-icon-purple {
+  background-color: #f3e8ff;
+  color: #9333ea;
+}
+
+/* Default / fallback */
+.stats-icon-default {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Text area */
+.stats-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.stats-label {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
