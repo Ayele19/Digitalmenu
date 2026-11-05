@@ -7,8 +7,15 @@ export function formatPrice(price) {
 export function formatDate(dateStr) {
   if (!dateStr) return ''
   return new Date(dateStr).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric'
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   })
+}
+
+export function truncateText(text, maxLen = 100) {
+  if (!text) return ''
+  return text.length > maxLen ? text.slice(0, maxLen) + '...' : text
 }
 
 export function slugify(text) {

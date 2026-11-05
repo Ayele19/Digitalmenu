@@ -1,0 +1,144 @@
+/* ==========================================
+   DashboardPage.css
+   ========================================== */
+
+.dashboard-page {
+  padding: 1.5rem;
+}
+
+.dashboard-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1A0F0A;
+  margin: 0 0 1.5rem;
+}
+
+/* ── Stats grid ─────────────────────────── */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Recent items card ───────────────────── */
+.dashboard-recent-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+.dashboard-recent-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-recent-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1A0F0A;
+  margin: 0;
+}
+
+.dashboard-recent-subtitle {
+  font-size: 0.8125rem;
+  color: #6B7280;
+}
+
+/* ── Table ─────────────────────────────── */
+.dashboard-table-wrapper {
+  overflow-x: auto;
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.dashboard-table th {
+  text-align: left;
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  color: #6B7280;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.dashboard-table td {
+  padding: 0.75rem 1.25rem;
+  color: #374151;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.dashboard-table tr:last-child td {
+  border-bottom: none;
+}
+
+.dashboard-table tbody tr:hover {
+  background-color: #FDF6EC;
+}
+
+.dashboard-item-name {
+  font-weight: 600;
+  color: #1A0F0A;
+}
+
+.dashboard-item-category {
+  color: #6B7280;
+  font-size: 0.8125rem;
+}
+
+.dashboard-item-price {
+  font-weight: 600;
+  color: #6B3A2A;
+}
+
+/* ── Status badge ───────────────────────── */
+.dashboard-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.dashboard-badge-available {
+  background-color: #DCFCE7;
+  color: #16A34A;
+}
+
+.dashboard-badge-unavailable {
+  background-color: #F3F4F6;
+  color: #6B7280;
+}
+
+/* ── Empty state ────────────────────────── */
+.dashboard-empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: #6B7280;
+  font-size: 0.9rem;
+}
+
+/* ── Loading / error ───────────────────── */
+.dashboard-loading {
+  text-align: center;
+  padding: 3rem;
+  color: #6B7280;
+}

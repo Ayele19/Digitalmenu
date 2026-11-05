@@ -1,0 +1,175 @@
+/* ==========================================
+   LoginPage.css — Admin login
+   ========================================== */
+
+/* ── Full-screen centering wrapper ────────── */
+.login-page {
+  min-height: 100vh;
+  background-color: #FDF6EC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+/* ── Card ─────────────────────────────────── */
+.login-card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ── Brand section at top ─────────────────── */
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.login-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #6B3A2A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.login-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.login-logo-emoji {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.login-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #1A0F0A;
+  margin: 0;
+  text-align: center;
+}
+
+.login-subtitle {
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin: 0;
+  text-align: center;
+}
+
+/* ── Form ──────────────────────────────────── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.login-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.login-input {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.9375rem;
+  color: #111827;
+  outline: none;
+  width: 100%;
+  background-color: #ffffff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.login-input:focus {
+  border-color: #6B3A2A;
+  box-shadow: 0 0 0 3px rgba(107, 58, 42, 0.15);
+}
+
+/* ── Password field with toggle ────────────── */
+.login-password-wrapper {
+  position: relative;
+}
+
+.login-password-input {
+  padding-right: 2.75rem;
+}
+
+.login-password-toggle {
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6B7280;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  transition: color 0.15s;
+}
+
+.login-password-toggle:hover {
+  color: #6B3A2A;
+}
+
+/* ── Error box ─────────────────────────────── */
+.login-error {
+  background-color: #FEE2E2;
+  border: 1px solid #FECACA;
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: #DC2626;
+}
+
+/* ── Submit button ─────────────────────────── */
+.login-submit-btn {
+  background-color: #6B3A2A;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.15s;
+  margin-top: 0.25rem;
+}
+
+.login-submit-btn:hover:not(:disabled) {
+  background-color: #8B4A36;
+}
+
+.login-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

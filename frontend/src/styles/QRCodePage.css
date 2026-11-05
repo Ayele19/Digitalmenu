@@ -1,0 +1,161 @@
+/* ==========================================
+   QRCodePage.css
+   ========================================== */
+
+.qr-page {
+  padding: 1.5rem;
+  max-width: 720px;
+}
+
+.qr-page-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1A0F0A;
+  margin: 0 0 1.5rem;
+}
+
+/* ── Main card ────────────────────────────── */
+.qr-main-card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ── QR wrapper (used by html2canvas) ───── */
+.qr-code-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  border: 2px solid #F5E6D3;
+}
+
+.qr-svg-wrapper {
+  line-height: 0;
+}
+
+.qr-cafe-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1A0F0A;
+  text-align: center;
+}
+
+/* ── Download buttons ─────────────────────── */
+.qr-actions {
+  display: flex;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.qr-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+  border: none;
+}
+
+.qr-btn-primary {
+  background-color: #6B3A2A;
+  color: #ffffff;
+}
+
+.qr-btn-primary:hover {
+  background-color: #8B4A36;
+}
+
+.qr-btn-secondary {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.qr-btn-secondary:hover {
+  background-color: #e5e7eb;
+}
+
+.qr-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Info box ─────────────────────────────── */
+.qr-info-box {
+  background-color: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.qr-info-icon {
+  color: #3B82F6;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.qr-info-text {
+  font-size: 0.875rem;
+  color: #1E40AF;
+  line-height: 1.6;
+}
+
+/* ── Tips card ────────────────────────────── */
+.qr-tips-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  padding: 1.25rem;
+}
+
+.qr-tips-title {
+  font-weight: 700;
+  color: #1A0F0A;
+  font-size: 0.9375rem;
+  margin: 0 0 0.75rem;
+}
+
+.qr-tips-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.qr-tips-list li {
+  font-size: 0.875rem;
+  color: #374151;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.qr-tip-bullet {
+  color: #6B3A2A;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}

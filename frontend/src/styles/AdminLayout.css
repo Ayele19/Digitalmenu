@@ -1,0 +1,24 @@
+/* ==========================================
+   AdminLayout.css — Layout wrapper for admin pages
+   ========================================== */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #F9FAFB;
+}
+
+/* Content area sits to the right of the fixed 16rem sidebar on desktop */
+.admin-layout-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: 16rem;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .admin-layout-main {
+    margin-left: 0;
+    padding-top: 3rem; /* space for hamburger button */
+  }
+}
