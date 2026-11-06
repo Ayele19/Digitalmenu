@@ -23,4 +23,5 @@ class CafeSettings(Base):
     address = Column(String(500), nullable=True)
     phone = Column(String(50), nullable=True)
     is_menu_active = Column(Boolean, default=True, nullable=False)
+    video_url = Column(String(500), nullable=True)
     updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow, nullable=False)

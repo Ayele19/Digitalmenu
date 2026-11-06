@@ -21,8 +21,8 @@ class MenuItem(Base):
     image_url = Column(String(500), nullable=True)
     category_id = Column(
         String(36),
-        ForeignKey("categories.id", ondelete="CASCADE"),
-        nullable=False,
+        ForeignKey("categories.id", ondelete="SET NULL"),
+        nullable=True,
     )
     is_available = Column(Boolean, default=True, nullable=False)
     display_order = Column(Integer, default=0, nullable=False)

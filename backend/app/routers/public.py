@@ -28,6 +28,7 @@ async def public_settings(db: AsyncSession = Depends(get_db)) -> SettingsRespons
             cafe_name = "Habesha Café"
             welcome_message = "Welcome! Enjoy our authentic Ethiopian flavors."
             logo_url = None
+            video_url = None
             address = None
             phone = None
             is_menu_active = True

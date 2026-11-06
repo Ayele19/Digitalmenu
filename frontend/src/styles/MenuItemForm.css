@@ -123,9 +123,21 @@
   min-height: 80px;
 }
 
-.mif-select option.mif-option-sub {
-  padding-left: 1.5rem;
-  color: #6b7280;
+.mif-select option {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.mif-select optgroup {
+  color: #6B3A2A;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.mif-select optgroup option {
+  color: #111827;
+  font-weight: 400;
+  padding-left: 1rem;
 }
 
 /* Toggle switch */

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Save } from 'lucide-react'
+import { Save, Upload, Film, X } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { getSettings, updateSettings, uploadLogo } from '../../api/settings'
+import { getSettings, updateSettings, uploadLogo, uploadVideo } from '../../api/settings'
 import ImageUpload from '../../components/common/ImageUpload'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import '../../styles/SettingsPage.css'
@@ -20,6 +20,10 @@ export default function SettingsPage() {
   const [logoFile, setLogoFile] = useState(null)
   const [currentLogoUrl, setCurrentLogoUrl] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [videoFile, setVideoFile] = useState(null)
+  const [currentVideoUrl, setCurrentVideoUrl] = useState(null)
+  const [videoUploadProgress, setVideoUploadProgress] = useState(0)
+  const [videoUploading, setVideoUploading] = useState(false)
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ['settings'],
@@ -38,6 +42,7 @@ export default function SettingsPage() {
         is_menu_active: settings.is_menu_active !== false,
       })
       setCurrentLogoUrl(settings.logo_url ?? null)
+      setCurrentVideoUrl(settings.video_url ?? null)
     }
   }, [settings])
 
@@ -54,6 +59,13 @@ export default function SettingsPage() {
       queryClient.invalidateQueries({ queryKey: ['settings'] })
     },
   })
+
+  function getApiUrl(url) {
+    if (!url) return null
+    if (url.startsWith('http')) return url
+    const base = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+    return `${base}${url}`
+  }
 
   async function handleSave(e) {
     e.preventDefault()
@@ -72,6 +84,30 @@ export default function SettingsPage() {
       toast.error(err?.response?.data?.detail ?? 'Failed to save settings.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleVideoUpload(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('video/')) {
+      toast.error('Please select a valid video file (MP4, WebM, MOV).')
+      return
+    }
+    setVideoFile(file)
+    setVideoUploading(true)
+    setVideoUploadProgress(0)
+    try {
+      const updated = await uploadVideo(file, setVideoUploadProgress)
+      setCurrentVideoUrl(updated.video_url ?? null)
+      queryClient.invalidateQueries({ queryKey: ['settings'] })
+      toast.success('Hero video uploaded successfully.')
+    } catch (err) {
+      toast.error(err?.response?.data?.detail ?? 'Failed to upload video.')
+    } finally {
+      setVideoUploading(false)
+      setVideoFile(null)
+      setVideoUploadProgress(0)
     }
   }
 
@@ -156,7 +192,57 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* ── Section 3: Menu Status ── */}
+        {/* ── Section 3: Hero Video ── */}
+        <section className="settings-section">
+          <h2 className="settings-section-title">Hero Video</h2>
+          <p className="settings-section-subtitle">
+            Cinematic ambiance video shown on the public menu page below the header. MP4, WebM, or MOV · max 200 MB.
+          </p>
+
+          {/* Current video preview */}
+          {currentVideoUrl && (
+            <div className="settings-video-preview">
+              <video
+                src={getApiUrl(currentVideoUrl)}
+                className="settings-video-player"
+                controls
+                muted
+                playsInline
+              />
+              <p className="settings-video-current-label">Current hero video</p>
+            </div>
+          )}
+
+          {/* Upload control */}
+          <label className="settings-video-upload-btn" aria-label="Upload hero video">
+            <input
+              type="file"
+              accept="video/mp4,video/webm,video/ogg,video/quicktime"
+              className="settings-video-input-hidden"
+              onChange={handleVideoUpload}
+              disabled={videoUploading}
+            />
+            {videoUploading ? (
+              <span className="settings-video-upload-inner">
+                <Film size={16} aria-hidden="true" />
+                Uploading… {videoUploadProgress}%
+                <span className="settings-video-progress-bar">
+                  <span
+                    className="settings-video-progress-fill"
+                    style={{ width: `${videoUploadProgress}%` }}
+                  />
+                </span>
+              </span>
+            ) : (
+              <span className="settings-video-upload-inner">
+                <Upload size={16} aria-hidden="true" />
+                {currentVideoUrl ? 'Replace video' : 'Upload video'}
+              </span>
+            )}
+          </label>
+        </section>
+
+        {/* ── Section 4: Menu Status ── */}
         <section className="settings-section">
           <h2 className="settings-section-title">Menu Status</h2>
           <div className="settings-toggle-row">

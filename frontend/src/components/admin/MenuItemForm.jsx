@@ -188,33 +188,24 @@ export default function MenuItemForm({ isOpen, onClose, onSave, categories = [],
                 <option value="">— Select a category —</option>
                 {parents.map((parent) => {
                   const subs = childrenOf(parent.id)
+                  if (subs.length > 0) {
+                    return (
+                      <optgroup key={parent.id} label={`${parent.name}`}>
+                        <option value={parent.id}>{parent.name} (general)</option>
+                        {subs.map((sub) => (
+                          <option key={sub.id} value={sub.id}>
+                            ↳ {sub.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )
+                  }
                   return (
-                    <React.Fragment key={parent.id}>
-                      <option value={parent.id}>{parent.name}</option>
-                      {subs.map((sub) => (
-                        <option
-                          key={sub.id}
-                          value={sub.id}
-                          className="mif-option-sub"
-                        >
-                          {'  '}↳ {sub.name}
-                        </option>
-                      ))}
-                    </React.Fragment>
+                    <option key={parent.id} value={parent.id}>
+                      {parent.name}
+                    </option>
                   )
                 })}
-                {/* Categories with no recognised parent (edge case) */}
-                {categories
-                  .filter(
-                    (c) =>
-                      c.parent_id &&
-                      !parents.find((p) => String(p.id) === String(c.parent_id))
-                  )
-                  .map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
               </select>
             </div>
 

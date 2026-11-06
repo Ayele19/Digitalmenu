@@ -1,43 +1,121 @@
 /* ==========================================
-   MenuPage.css — Customer-facing menu page
+   MenuPage — customer-facing, rich UI
    ========================================== */
 
 /* ── Page wrapper ─────────────────────────── */
 .menu-page {
   min-height: 100vh;
-  background-color: #FDF6EC;
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
+}
+
+/* ── Cinematic hero video ───────────────────── */
+.menu-hero-video-wrapper {
+  position: relative;
+  /* z-index: 0 keeps it below the sticky header (z:30), search (z:20), filter (z:19) */
+  z-index: 0;
+  width: 100%;
+  /* 16:9 on wide screens, taller on mobile for vertical video */
+  height: clamp(220px, 42vw, 520px);
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.menu-hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Slight scale so the edge never shows */
+  transform: scale(1.04);
+}
+
+/* Semi-transparent dark layer — gives the cinematic look and protects contrast */
+.menu-hero-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.25) 50%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  pointer-events: none;
+}
+
+/* Bottom gradient fades the video into the white page background */
+.menu-hero-video-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: linear-gradient(to bottom, transparent, #ffffff);
+  pointer-events: none;
+}
+
+/* On mobile (portrait), allow the video to be taller for vertical footage */
+@media (max-width: 480px) {
+  .menu-hero-video-wrapper {
+    height: clamp(260px, 80vw, 420px);
+  }
 }
 
 /* ── Sticky header ─────────────────────────── */
 .menu-header {
   position: sticky;
   top: 0;
-  z-index: 20;
-  background-color: #6B3A2A;
+  z-index: 30;
+  isolation: isolate;
+  background: linear-gradient(135deg, #6B3A2A 0%, #8B4A36 60%, #5a3020 100%);
   color: #ffffff;
-  padding: 1rem;
+  padding: 0.875rem 1.25rem;
   display: flex;
   align-items: center;
-  gap: 0.875rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  gap: 1rem;
+  box-shadow: 0 4px 20px rgba(107, 58, 42, 0.35);
+}
+
+/* Decorative Ethiopian-inspired border */
+.menu-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #c9a84c, #f5d78e, #c9a84c, #f5d78e, #c9a84c);
+  background-size: 200% 100%;
+  animation: header-gold-scroll 4s linear infinite;
+}
+
+@keyframes header-gold-scroll {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .menu-header-logo {
-  width: 60px;
-  height: 60px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2.5px solid rgba(201, 168, 76, 0.7);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.2);
+  transition: transform 0.3s ease;
 }
 
-.menu-header-logo img {
+.menu-header-logo:hover {
+  transform: scale(1.06);
+}
+
+.menu-header-logo-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -47,6 +125,7 @@
 .menu-header-logo-fallback {
   font-size: 2rem;
   line-height: 1;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
 }
 
 .menu-header-text {
@@ -56,74 +135,154 @@
 
 .menu-header-name {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.375rem;
+  font-size: 1.45rem;
   font-weight: 700;
   color: #ffffff;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .menu-header-welcome {
   font-style: italic;
   font-size: 0.8125rem;
-  color: rgba(255, 255, 255, 0.82);
-  margin-top: 0.15rem;
+  color: rgba(255, 255, 255, 0.78);
+  margin-top: 0.2rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* ── Main content ─────────────────────────── */
-.menu-main {
-  flex: 1;
-  padding: 0 0 2rem;
+/* ── Hero banner ──────────────────────────── */
+.menu-hero-banner {
+  background: linear-gradient(180deg, rgba(107, 58, 42, 0.08) 0%, transparent 100%);
+  padding: 1.25rem 1.25rem 0.5rem;
+  text-align: center;
+}
+
+.menu-hero-tagline {
+  font-size: 0.875rem;
+  color: #8B4A36;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Search wrapper ─────────────────────── */
+.menu-search-wrapper {
+  padding: 0.875rem 1.25rem 0.375rem;
+  position: sticky;
+  top: 79px;
+  z-index: 20;
+  isolation: isolate;
+  background-color: #ffffff;
+}
+
+/* ── Category filter row ─────────────────── */
+.menu-filter-wrapper {
+  padding: 0.375rem 1.25rem 0.5rem;
+  position: sticky;
+  top: 136px;
+  z-index: 19;
+  isolation: isolate;
+  background-color: #ffffff;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
 }
 
 /* ── Section heading ─────────────────────── */
-.menu-section-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #6B7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 1rem 1rem 0.25rem;
+.menu-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1.25rem 0.5rem;
 }
 
-/* ── Grid ─────────────────────────────────── */
+.menu-section-heading-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, #c9a84c44, transparent);
+}
+
+.menu-section-heading-text {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #6B3A2A;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+/* ── Main content ─────────────────────────── */
+.menu-main {
+  flex: 1;
+  padding-bottom: 3rem;
+}
+
+/* ── Item grid ─────────────────────────────── */
 .menu-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
+  gap: 1.125rem;
+  padding: 0.75rem 1.25rem;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 480px) {
   .menu-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.375rem;
+    padding: 1rem 2rem;
   }
 }
 
 @media (min-width: 1024px) {
   .menu-grid {
     grid-template-columns: repeat(3, 1fr);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2.5rem;
+  }
+  .menu-search-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+  .menu-filter-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media (min-width: 1400px) {
+  .menu-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
 /* ── Skeleton loading cards ──────────────── */
 .menu-skeleton-card {
   background-color: #ffffff;
-  border-radius: 0.75rem;
+  border-radius: 1.25rem;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(107, 58, 42, 0.06);
 }
 
 .menu-skeleton-image {
   width: 100%;
-  height: 160px;
-  background-color: #e5e7eb;
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  height: 210px;
+  background: linear-gradient(90deg, #f0e0cc 25%, #faebd7 50%, #f0e0cc 75%);
+  background-size: 200% 100%;
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
 }
 
 .menu-skeleton-body {
@@ -136,29 +295,19 @@
 .menu-skeleton-line {
   height: 0.875rem;
   border-radius: 0.375rem;
-  background-color: #e5e7eb;
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, #f0e0cc 25%, #faebd7 50%, #f0e0cc 75%);
+  background-size: 200% 100%;
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
 }
 
-.menu-skeleton-line-title {
-  width: 70%;
-  height: 1rem;
-}
+.menu-skeleton-line-title  { width: 68%; height: 1.05rem; }
+.menu-skeleton-line        { width: 90%; }
+.menu-skeleton-line-short  { width: 50%; }
+.menu-skeleton-line-price  { width: 35%; height: 1.05rem; background-color: #e8c99a; }
 
-.menu-skeleton-line-short {
-  width: 45%;
-}
-
-.menu-skeleton-line-price {
-  width: 30%;
-  margin-top: 0.25rem;
-  height: 1rem;
-  background-color: #d1d5db;
-}
-
-@keyframes skeleton-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.45; }
+@keyframes skeleton-sweep {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
 
 /* ── Empty state ─────────────────────────── */
@@ -167,45 +316,63 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 1rem;
+  padding: 5rem 1.5rem;
   text-align: center;
-  gap: 0.75rem;
+  gap: 0.875rem;
+  animation: fade-up 0.4s ease-out;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .menu-empty-emoji {
-  font-size: 3.5rem;
+  font-size: 4rem;
   line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+  animation: gentle-bob 3s ease-in-out infinite;
+}
+
+@keyframes gentle-bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
 }
 
 .menu-empty-title {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 700;
   color: #374151;
+  margin: 0;
 }
 
 .menu-empty-suggestion {
   font-size: 0.9rem;
-  color: #6B7280;
-  max-width: 280px;
+  color: #6b7280;
+  max-width: 300px;
+  line-height: 1.6;
+  margin: 0;
 }
 
 /* ── Footer ──────────────────────────────── */
 .menu-footer {
-  background-color: #6B3A2A;
-  color: rgba(255, 255, 255, 0.7);
+  background: linear-gradient(135deg, #6B3A2A 0%, #5a3020 100%);
+  color: rgba(255, 255, 255, 0.65);
   text-align: center;
-  padding: 1rem;
+  padding: 1.25rem 1rem;
   font-size: 0.8125rem;
 }
 
 .menu-footer-name {
-  color: #ffffff;
-  font-weight: 600;
+  color: #f5d78e;
+  font-weight: 700;
+  font-size: 0.9375rem;
   display: block;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
 .menu-footer-powered {
   font-size: 0.75rem;
-  opacity: 0.6;
+  opacity: 0.55;
 }

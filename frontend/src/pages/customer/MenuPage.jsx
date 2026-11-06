@@ -26,19 +26,14 @@ export default function MenuPage() {
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
 
-  const {
-    data: settings,
-    isLoading: settingsLoading,
-  } = useQuery({
+  const { data: settings, isLoading: settingsLoading } = useQuery({
     queryKey: ['public-settings'],
     queryFn: getPublicSettings,
     staleTime: 60000,
   })
 
-  const {
-    data: menuData,
-    isLoading: menuLoading,
-  } = useQuery({
+  // API returns: [{ id, name, slug, icon, display_order, items: [...], subcategories: [...] }]
+  const { data: menuSections = [], isLoading: menuLoading } = useQuery({
     queryKey: ['public-menu'],
     queryFn: getPublicMenu,
     staleTime: 30000,
@@ -46,37 +41,60 @@ export default function MenuPage() {
 
   const isLoading = settingsLoading || menuLoading
 
-  // Build flat list of all items and parent categories from menu data
-  const { allItems, parentCategories, categoryMap } = useMemo(() => {
-    const cats = menuData?.categories ?? []
-    const items = menuData?.items ?? []
+  // Flatten the menu tree into:
+  //   - parentCategories: top-level categories (for filter pills)
+  //   - allItems: every item with its category_id attached
+  const { parentCategories, allItems } = useMemo(() => {
+    if (!menuSections || menuSections.length === 0) {
+      return { parentCategories: [], allItems: [] }
+    }
 
-    const map = {}
-    cats.forEach((c) => { map[String(c.id)] = c })
+    const parents = []
+    const items = []
 
-    const parents = cats.filter((c) => !c.parent_id)
+    menuSections.forEach((section) => {
+      // Parent category pill
+      parents.push({
+        id: section.id,
+        name: section.name,
+        icon: section.icon,
+        slug: section.slug,
+        display_order: section.display_order,
+      })
 
-    return { allItems: items, parentCategories: parents, categoryMap: map }
-  }, [menuData])
+      // Items directly on this parent category
+      if (section.items) {
+        section.items.forEach((item) => {
+          items.push({ ...item, category_id: section.id, _parentId: section.id })
+        })
+      }
 
-  // Collect all category ids that belong to the selected parent (parent + its children)
-  const activeCategoryIds = useMemo(() => {
-    if (activeCategory === 'all') return null
-    const selected = String(activeCategory)
-    const all = menuData?.categories ?? []
-    const children = all
-      .filter((c) => String(c.parent_id) === selected)
-      .map((c) => String(c.id))
-    return new Set([selected, ...children])
-  }, [activeCategory, menuData])
+      // Subcategory items
+      if (section.subcategories) {
+        section.subcategories.forEach((sub) => {
+          if (sub.items) {
+            sub.items.forEach((item) => {
+              items.push({ ...item, category_id: sub.id, _parentId: section.id })
+            })
+          }
+        })
+      }
+    })
 
-  // Filter items
+    return { parentCategories: parents, allItems: items }
+  }, [menuSections])
+
+  // Filter items by selected category and search term
   const filteredItems = useMemo(() => {
     let items = allItems
 
-    if (activeCategoryIds) {
-      items = items.filter((item) =>
-        activeCategoryIds.has(String(item.category_id))
+    if (activeCategory !== 'all') {
+      const selectedId = String(activeCategory)
+      // Show items whose parent category matches OR items directly in the sub
+      items = items.filter(
+        (item) =>
+          String(item._parentId) === selectedId ||
+          String(item.category_id) === selectedId
       )
     }
 
@@ -90,11 +108,20 @@ export default function MenuPage() {
     }
 
     return items
-  }, [allItems, activeCategoryIds, search])
+  }, [allItems, activeCategory, search])
 
-  const cafeName = settings?.cafe_name ?? 'Ethiopian Café'
-  const welcomeMsg = settings?.welcome_message ?? 'Welcome, enjoy our menu'
+  const cafeName = settings?.cafe_name ?? 'Habesha Café'
+  const welcomeMsg = settings?.welcome_message ?? 'Welcome! Enjoy our authentic Ethiopian flavors.'
   const logoUrl = settings?.logo_url ?? null
+  const videoUrl = settings?.video_url ?? null
+
+  // Build the full image/video URL — backend serves from /uploads/
+  function getImageUrl(url) {
+    if (!url) return null
+    if (url.startsWith('http')) return url
+    const base = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+    return `${base}${url}`
+  }
 
   return (
     <div className="menu-page">
@@ -102,7 +129,7 @@ export default function MenuPage() {
       <header className="menu-header">
         <div className="menu-header-logo" aria-hidden="true">
           {logoUrl ? (
-            <img src={logoUrl} alt={`${cafeName} logo`} />
+            <img src={getImageUrl(logoUrl)} alt={`${cafeName} logo`} className="menu-header-logo-img" />
           ) : (
             <span className="menu-header-logo-fallback">☕</span>
           )}
@@ -113,18 +140,41 @@ export default function MenuPage() {
         </div>
       </header>
 
+      {/* ── Cinematic hero video ── */}
+      {videoUrl && (
+        <div className="menu-hero-video-wrapper" aria-hidden="true">
+          <video
+            className="menu-hero-video"
+            src={getImageUrl(videoUrl)}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+          />
+          {/* Dark overlay for cinematic depth */}
+          <div className="menu-hero-video-overlay" />
+          {/* Bottom fade into page background */}
+          <div className="menu-hero-video-fade" />
+        </div>
+      )}
+
       <main className="menu-main">
         {/* ── Search ── */}
-        <SearchBar value={search} onChange={setSearch} />
+        <div className="menu-search-wrapper">
+          <SearchBar value={search} onChange={setSearch} />
+        </div>
 
-        {/* ── Category filter ── */}
-        <CategoryFilter
-          categories={parentCategories}
-          activeCategory={activeCategory}
-          onSelect={setActiveCategory}
-        />
+        {/* ── Category filter pills ── */}
+        <div className="menu-filter-wrapper">
+          <CategoryFilter
+            categories={parentCategories}
+            activeCategory={activeCategory}
+            onSelect={setActiveCategory}
+          />
+        </div>
 
-        {/* ── Content ── */}
+        {/* ── Item grid ── */}
         {isLoading ? (
           <div className="menu-grid">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -136,20 +186,22 @@ export default function MenuPage() {
             <span className="menu-empty-emoji">🍵</span>
             <p className="menu-empty-title">No items found</p>
             <p className="menu-empty-suggestion">
-              Try a different search term or select another category.
+              {search
+                ? 'Try a different search term or select another category.'
+                : 'No menu items are available right now. Please check back soon.'}
             </p>
           </div>
         ) : (
           <div className="menu-grid">
-            {filteredItems.map((item) => {
-              const cat = categoryMap[String(item.category_id)]
-              return (
-                <MenuCard
-                  key={item.id}
-                  item={{ ...item, emoji: cat?.icon ?? '🍽️' }}
-                />
-              )
-            })}
+            {filteredItems.map((item) => (
+              <MenuCard
+                key={item.id}
+                item={{
+                  ...item,
+                  image_url: getImageUrl(item.image_url),
+                }}
+              />
+            ))}
           </div>
         )}
       </main>

@@ -9,7 +9,6 @@ import {
   deleteCategory,
   reorderCategory,
 } from '../../api/categories'
-import { getMenuItems } from '../../api/menuItems'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import '../../styles/CategoriesPage.css'
 
@@ -49,7 +48,7 @@ function CategoryModal({ isOpen, onClose, onSave, parentCategories, editCategory
       await onSave({
         name: fields.name.trim(),
         icon: fields.icon.trim() || null,
-        parent_id: fields.parent_id ? Number(fields.parent_id) : null,
+        parent_id: fields.parent_id ? fields.parent_id : null,
       })
     } finally {
       setSaving(false)
@@ -142,34 +141,15 @@ export default function CategoriesPage() {
   const [editCategory, setEditCategory] = useState(null)
   const [defaultParentId, setDefaultParentId] = useState('')
 
-  const { data: categories = [], isLoading } = useQuery({
+  // API returns CategoryWithChildren[]:
+  // [{ id, name, icon, parent_id, display_order, is_active, item_count, children: [...] }]
+  const { data: categoryTree = [], isLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories,
   })
 
-  const { data: items = [] } = useQuery({
-    queryKey: ['menu-items'],
-    queryFn: getMenuItems,
-  })
-
-  // Map category id → item count
-  const itemCountMap = useMemo(() => {
-    const m = {}
-    items.forEach((item) => {
-      const key = String(item.category_id)
-      m[key] = (m[key] ?? 0) + 1
-    })
-    return m
-  }, [items])
-
-  const parentCategories = useMemo(
-    () => categories.filter((c) => !c.parent_id),
-    [categories]
-  )
-
-  function childrenOf(parentId) {
-    return categories.filter((c) => String(c.parent_id) === String(parentId))
-  }
+  // parentCategories = top-level nodes (the tree roots)
+  const parentCategories = categoryTree
 
   // ── Mutations ──
   const createMutation = useMutation({
@@ -228,19 +208,19 @@ export default function CategoriesPage() {
   }
 
   function handleDelete(cat) {
-    const assignedCount = itemCountMap[String(cat.id)] ?? 0
-    const children = childrenOf(cat.id)
+    const itemCount = cat.item_count ?? 0
+    const childCount = cat.children?.length ?? 0
 
-    if (assignedCount > 0) {
+    if (itemCount > 0) {
       toast.error(
-        `Cannot delete: ${assignedCount} item${assignedCount > 1 ? 's' : ''} assigned to "${cat.name}". Reassign them first.`,
+        `Cannot delete: ${itemCount} item${itemCount > 1 ? 's' : ''} assigned to "${cat.name}". Reassign them first.`,
         { duration: 5000 }
       )
       return
     }
 
-    if (children.length > 0) {
-      if (!window.confirm(`"${cat.name}" has ${children.length} subcategorie(s). Delete them all?`)) {
+    if (childCount > 0) {
+      if (!window.confirm(`"${cat.name}" has ${childCount} subcategorie(s). Delete them all?`)) {
         return
       }
     }
@@ -264,23 +244,13 @@ export default function CategoriesPage() {
     })
   }
 
-  function handleReorder(cat, direction) {
-    const siblings = categories
-      .filter((c) => {
-        if (cat.parent_id) return String(c.parent_id) === String(cat.parent_id)
-        return !c.parent_id
-      })
-      .sort((a, b) => (a.display_order ?? a.id) - (b.display_order ?? b.id))
-
-    const idx = siblings.findIndex((c) => c.id === cat.id)
+  function handleReorder(cat, siblings, direction) {
+    const sorted = [...siblings].sort((a, b) => a.display_order - b.display_order)
+    const idx = sorted.findIndex((c) => c.id === cat.id)
     if (direction === 'up' && idx === 0) return
-    if (direction === 'down' && idx === siblings.length - 1) return
-
-    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
-    const swapWith = siblings[swapIdx]
-
-    const newOrder = swapWith.display_order ?? swapIdx + 1
-    reorderMutation.mutate({ id: cat.id, order: newOrder })
+    if (direction === 'down' && idx === sorted.length - 1) return
+    const swapWith = sorted[direction === 'up' ? idx - 1 : idx + 1]
+    reorderMutation.mutate({ id: cat.id, order: swapWith.display_order })
   }
 
   return (
@@ -300,16 +270,15 @@ export default function CategoriesPage() {
         <div className="categories-empty">No categories yet. Add one to get started.</div>
       ) : (
         <div className="categories-tree">
-          {parentCategories
-            .sort((a, b) => (a.display_order ?? a.id) - (b.display_order ?? b.id))
+          {[...parentCategories]
+            .sort((a, b) => a.display_order - b.display_order)
             .map((parent, pIdx, pArr) => {
-              const children = childrenOf(parent.id)
+              const children = parent.children ?? []
               const isOpen = openParents.has(parent.id)
-              const itemCount = itemCountMap[String(parent.id)] ?? 0
 
               return (
                 <div key={parent.id} className="category-parent-row">
-                  {/* ── Parent row header ── */}
+                  {/* ── Parent row ── */}
                   <div className="category-row-header" onClick={() => toggleParent(parent.id)}>
                     <ChevronRight
                       size={16}
@@ -320,31 +289,29 @@ export default function CategoriesPage() {
                       {parent.icon || '📁'}
                     </span>
                     <span className="category-row-name">{parent.name}</span>
-                    {itemCount > 0 && (
-                      <span className="category-item-count">{itemCount}</span>
+                    {(parent.item_count ?? 0) > 0 && (
+                      <span className="category-item-count">{parent.item_count}</span>
                     )}
-                    {/* ── Row actions ── */}
-                    <div
-                      className="category-row-actions"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    {children.length > 0 && (
+                      <span className="category-children-badge">{children.length} sub</span>
+                    )}
+
+                    <div className="category-row-actions" onClick={(e) => e.stopPropagation()}>
                       <button
                         type="button"
                         className="category-reorder-btn"
-                        onClick={() => handleReorder(parent, 'up')}
+                        onClick={() => handleReorder(parent, pArr, 'up')}
                         disabled={pIdx === 0}
                         aria-label="Move up"
-                        title="Move up"
                       >
                         <ArrowUp size={13} />
                       </button>
                       <button
                         type="button"
                         className="category-reorder-btn"
-                        onClick={() => handleReorder(parent, 'down')}
+                        onClick={() => handleReorder(parent, pArr, 'down')}
                         disabled={pIdx === pArr.length - 1}
                         aria-label="Move down"
-                        title="Move down"
                       >
                         <ArrowDown size={13} />
                       </button>
@@ -379,58 +346,55 @@ export default function CategoriesPage() {
                   {/* ── Children ── */}
                   {isOpen && children.length > 0 && (
                     <div className="category-children-list">
-                      {children
-                        .sort((a, b) => (a.display_order ?? a.id) - (b.display_order ?? b.id))
-                        .map((child, cIdx, cArr) => {
-                          const childCount = itemCountMap[String(child.id)] ?? 0
-                          return (
-                            <div key={child.id} className="category-child-row">
-                              <span className="category-child-emoji" aria-hidden="true">
-                                {child.icon || '▸'}
-                              </span>
-                              <span className="category-child-name">{child.name}</span>
-                              {childCount > 0 && (
-                                <span className="category-child-count">{childCount}</span>
-                              )}
-                              <div className="category-row-actions">
-                                <button
-                                  type="button"
-                                  className="category-reorder-btn"
-                                  onClick={() => handleReorder(child, 'up')}
-                                  disabled={cIdx === 0}
-                                  aria-label="Move up"
-                                >
-                                  <ArrowUp size={12} />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="category-reorder-btn"
-                                  onClick={() => handleReorder(child, 'down')}
-                                  disabled={cIdx === cArr.length - 1}
-                                  aria-label="Move down"
-                                >
-                                  <ArrowDown size={12} />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="category-action-btn"
-                                  onClick={() => handleOpenEdit(child)}
-                                  aria-label={`Edit ${child.name}`}
-                                >
-                                  <Pencil size={14} />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="category-action-btn category-action-btn-delete"
-                                  onClick={() => handleDelete(child)}
-                                  aria-label={`Delete ${child.name}`}
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              </div>
+                      {[...children]
+                        .sort((a, b) => a.display_order - b.display_order)
+                        .map((child, cIdx, cArr) => (
+                          <div key={child.id} className="category-child-row">
+                            <span className="category-child-emoji" aria-hidden="true">
+                              {child.icon || '▸'}
+                            </span>
+                            <span className="category-child-name">{child.name}</span>
+                            {(child.item_count ?? 0) > 0 && (
+                              <span className="category-child-count">{child.item_count}</span>
+                            )}
+                            <div className="category-row-actions">
+                              <button
+                                type="button"
+                                className="category-reorder-btn"
+                                onClick={() => handleReorder(child, cArr, 'up')}
+                                disabled={cIdx === 0}
+                                aria-label="Move up"
+                              >
+                                <ArrowUp size={12} />
+                              </button>
+                              <button
+                                type="button"
+                                className="category-reorder-btn"
+                                onClick={() => handleReorder(child, cArr, 'down')}
+                                disabled={cIdx === cArr.length - 1}
+                                aria-label="Move down"
+                              >
+                                <ArrowDown size={12} />
+                              </button>
+                              <button
+                                type="button"
+                                className="category-action-btn"
+                                onClick={() => handleOpenEdit(child)}
+                                aria-label={`Edit ${child.name}`}
+                              >
+                                <Pencil size={14} />
+                              </button>
+                              <button
+                                type="button"
+                                className="category-action-btn category-action-btn-delete"
+                                onClick={() => handleDelete(child)}
+                                aria-label={`Delete ${child.name}`}
+                              >
+                                <Trash2 size={14} />
+                              </button>
                             </div>
-                          )
-                        })}
+                          </div>
+                        ))}
                     </div>
                   )}
                 </div>
@@ -439,7 +403,6 @@ export default function CategoriesPage() {
         </div>
       )}
 
-      {/* ── Category form modal ── */}
       <CategoryModal
         isOpen={modalOpen}
         onClose={() => { setModalOpen(false); setEditCategory(null) }}

@@ -61,8 +61,8 @@ async def save_upload_file(file: UploadFile, upload_dir: str) -> str:
         # Greyscale is fine for JPEG; keep as-is
         pass
 
-    # Resize maintaining aspect ratio
-    image.thumbnail((800, 800), Image.LANCZOS)
+    # Resize maintaining aspect ratio — 1200px for sharp retina display
+    image.thumbnail((1200, 1200), Image.LANCZOS)
 
     # Ensure upload directory exists
     dest_dir = Path(upload_dir)
@@ -70,7 +70,7 @@ async def save_upload_file(file: UploadFile, upload_dir: str) -> str:
 
     dest_path = dest_dir / filename
     try:
-        image.save(str(dest_path), format="JPEG", quality=85, optimize=True)
+        image.save(str(dest_path), format="JPEG", quality=95, optimize=True, progressive=True)
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

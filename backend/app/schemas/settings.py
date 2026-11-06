@@ -20,6 +20,7 @@ class SettingsResponse(BaseModel):
     cafe_name: str
     welcome_message: str
     logo_url: str | None
+    video_url: str | None
     address: str | None
     phone: str | None
     is_menu_active: bool

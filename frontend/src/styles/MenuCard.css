@@ -1,30 +1,42 @@
 /* ==========================================
-   MenuCard styles
+   MenuCard — rich interactive card
    ========================================== */
 
 .menu-card {
   background-color: #ffffff;
-  border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 12px rgba(107, 58, 42, 0.08);
   overflow: hidden;
-  transition: box-shadow 0.2s, transform 0.15s;
   display: flex;
   flex-direction: column;
   position: relative;
+  cursor: pointer;
+  transition:
+    box-shadow 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform  0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, box-shadow;
 }
 
 .menu-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
-  transform: translateY(-2px);
+  box-shadow:
+    0 12px 32px rgba(107, 58, 42, 0.18),
+    0 2px 8px  rgba(107, 58, 42, 0.10);
+  transform: translateY(-6px) scale(1.012);
+}
+
+.menu-card:active {
+  transform: translateY(-2px) scale(0.99);
+  transition-duration: 0.1s;
 }
 
 /* ── Image section ─────────────────────────── */
 .menu-card-image-wrapper {
   width: 100%;
-  height: 200px;
+  height: 210px;
   overflow: hidden;
   flex-shrink: 0;
   position: relative;
+  background-color: #f5e6d3;
 }
 
 .menu-card-image {
@@ -32,81 +44,191 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  image-rendering: high-quality;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.menu-card:hover .menu-card-image {
+  transform: scale(1.08);
+}
+
+/* Shimmer effect on image while loading */
+.menu-card-image-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.menu-card:hover .menu-card-image-wrapper::after {
+  opacity: 1;
+  animation: card-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes card-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
 
 /* Placeholder gradient when no image */
 .menu-card-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #F5E6D3 0%, #C9A84C 100%);
+  background: linear-gradient(135deg, #f5e6d3 0%, #e8c99a 50%, #c9a84c 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.3s;
+}
+
+.menu-card:hover .menu-card-placeholder {
+  background: linear-gradient(135deg, #eedcca 0%, #dbb882 50%, #b8943a 100%);
 }
 
 .menu-card-placeholder-emoji {
-  font-size: 3.5rem;
+  font-size: 4rem;
   line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.18));
+  transition: transform 0.3s ease;
+}
+
+.menu-card:hover .menu-card-placeholder-emoji {
+  transform: scale(1.15) rotate(-4deg);
+}
+
+/* ── Price badge over image ─────────────────── */
+.menu-card-price-badge {
+  position: absolute;
+  bottom: 0.6rem;
+  right: 0.6rem;
+  background-color: #6B3A2A;
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  letter-spacing: 0.02em;
+  transform: translateY(4px);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.menu-card:hover .menu-card-price-badge {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ── Body ─────────────────────────────────── */
 .menu-card-body {
-  padding: 0.875rem 1rem;
+  padding: 0.875rem 1rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.3rem;
   flex: 1;
 }
 
 .menu-card-name {
   font-size: 1rem;
-  font-weight: 600;
-  color: #111827;
+  font-weight: 700;
+  color: #1a0f0a;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   margin: 0;
+  transition: color 0.2s;
+}
+
+.menu-card:hover .menu-card-name {
+  color: #6B3A2A;
 }
 
 .menu-card-description {
-  font-size: 0.8125rem;
+  font-size: 0.8rem;
   color: #6b7280;
   margin: 0;
-  /* 2-line clamp */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.45;
-  min-height: 2.35em;
+  line-height: 1.5;
+  min-height: 2.4em;
+}
+
+.menu-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.4rem;
 }
 
 .menu-card-price {
-  font-size: 0.9375rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 800;
   color: #6B3A2A;
-  margin: 0.25rem 0 0 0;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+/* View button — appears on hover */
+.menu-card-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: #6B3A2A;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 0.22s ease, transform 0.22s ease, background-color 0.15s;
+}
+
+.menu-card:hover .menu-card-view-btn {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.menu-card-view-btn:hover {
+  background-color: #8B4A36;
 }
 
 /* ── Unavailable overlay ──────────────────── */
 .menu-card-unavailable-overlay {
   position: absolute;
   inset: 0;
-  background-color: rgba(156, 163, 175, 0.55);
+  background-color: rgba(243, 244, 246, 0.82);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 1rem;
+  border-radius: 1.25rem;
 }
 
 .menu-card-unavailable-badge {
-  background-color: rgba(55, 65, 81, 0.88);
+  background-color: rgba(55, 65, 81, 0.90);
   color: #ffffff;
   font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.375rem 0.875rem;
+  padding: 0.4rem 1rem;
   border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }

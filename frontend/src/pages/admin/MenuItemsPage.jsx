@@ -31,12 +31,36 @@ export default function MenuItemsPage() {
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories,
+    staleTime: 0,        // always fresh — categories change rarely but must reflect deletes
   })
 
   const catMap = useMemo(() => {
     const m = {}
-    categories.forEach((c) => { m[String(c.id)] = c.name })
+    categories.forEach((c) => {
+      m[String(c.id)] = c.name
+      // also map children
+      if (c.children) {
+        c.children.forEach((child) => { m[String(child.id)] = child.name })
+      }
+    })
     return m
+  }, [categories])
+
+  // Flatten the nested category tree into a flat list for the form select
+  // Only include active categories
+  const flatCategories = useMemo(() => {
+    const flat = []
+    categories.forEach((parent) => {
+      if (parent.is_active === false) return
+      flat.push({ id: parent.id, name: parent.name, parent_id: null })
+      if (parent.children) {
+        parent.children.forEach((child) => {
+          if (child.is_active === false) return
+          flat.push({ id: child.id, name: child.name, parent_id: parent.id })
+        })
+      }
+    })
+    return flat
   }, [categories])
 
   // ── Mutations ──
@@ -95,7 +119,7 @@ export default function MenuItemsPage() {
     return items.filter(
       (i) =>
         i.name?.toLowerCase().includes(term) ||
-        catMap[String(i.category_id)]?.toLowerCase().includes(term)
+        flatCategories.find((c) => String(c.id) === String(i.category_id))?.name?.toLowerCase().includes(term)
     )
   }, [items, search, catMap])
 
@@ -301,7 +325,7 @@ export default function MenuItemsPage() {
         isOpen={formOpen}
         onClose={() => { setFormOpen(false); setEditItem(null) }}
         onSave={handleFormSave}
-        categories={categories}
+        categories={flatCategories}
         editItem={editItem}
       />
 

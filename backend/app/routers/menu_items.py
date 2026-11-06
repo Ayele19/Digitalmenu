@@ -69,8 +69,8 @@ async def create_menu_item(
     name: str = Form(...),
     description: str = Form(default=""),
     price: float = Form(...),
-    category_id: str = Form(...),
-    is_available: bool = Form(default=True),
+    category_id: str | None = Form(default=None),
+    is_available: str = Form(default="true"),
     display_order: int = Form(default=0),
     image: UploadFile | None = None,
     db: AsyncSession = Depends(get_db),
@@ -80,12 +80,18 @@ async def create_menu_item(
     if image is not None and image.filename:
         image_url = await save_upload_file(image, app_settings.UPLOAD_DIR)
 
+    # FormData sends booleans as strings
+    available = is_available.lower() not in ("false", "0", "no")
+
+    # Treat empty string category_id as None
+    cat_id = category_id if category_id and category_id.strip() else None
+
     menu_item = MenuItem(
         name=name,
         description=description or None,
         price=price,
-        category_id=category_id,
-        is_available=is_available,
+        category_id=cat_id,
+        is_available=available,
         display_order=display_order,
         image_url=image_url,
     )
@@ -102,7 +108,7 @@ async def update_menu_item(
     description: str | None = Form(default=None),
     price: float | None = Form(default=None),
     category_id: str | None = Form(default=None),
-    is_available: bool | None = Form(default=None),
+    is_available: str | None = Form(default=None),
     display_order: int | None = Form(default=None),
     image: UploadFile | None = None,
     db: AsyncSession = Depends(get_db),
@@ -120,14 +126,13 @@ async def update_menu_item(
     if price is not None:
         item.price = price
     if category_id is not None:
-        item.category_id = category_id
+        item.category_id = category_id if category_id.strip() else None
     if is_available is not None:
-        item.is_available = is_available
+        item.is_available = is_available.lower() not in ("false", "0", "no")
     if display_order is not None:
         item.display_order = display_order
 
     if image is not None and image.filename:
-        # Remove old image from disk before storing the new one
         if item.image_url:
             _delete_image_file(item.image_url)
         item.image_url = await save_upload_file(image, app_settings.UPLOAD_DIR)

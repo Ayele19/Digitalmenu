@@ -1,5 +1,5 @@
 /* ==========================================
-   CategoryFilter styles
+   CategoryFilter — interactive pills
    ========================================== */
 
 .category-filter-wrapper {
@@ -16,25 +16,50 @@
 .category-filter-row {
   display: flex;
   gap: 0.5rem;
-  padding: 0.25rem 0.125rem;
-  /* Prevent wrapping so it stays horizontally scrollable */
+  padding: 0.375rem 0.125rem;
   flex-wrap: nowrap;
 }
 
-/* Pill button base */
+/* ── Pill base ────────────────────────────── */
 .category-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.375rem 0.875rem;
+  padding: 0.45rem 1rem;
   border-radius: 9999px;
   font-size: 0.8125rem;
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+  transition:
+    background-color 0.2s ease,
+    color            0.2s ease,
+    border-color     0.2s ease,
+    transform        0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow       0.2s ease;
   line-height: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ripple effect */
+.category-pill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.3s, transform 0.3s;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.category-pill:active::before {
+  opacity: 1;
+  transform: scale(1.5);
+  transition-duration: 0.15s;
 }
 
 .category-pill:focus-visible {
@@ -43,29 +68,54 @@
 }
 
 .category-pill:active {
-  transform: scale(0.96);
+  transform: scale(0.93);
 }
 
-/* Inactive pill */
+/* ── Inactive state ───────────────────────── */
 .category-pill-inactive {
   background-color: #ffffff;
   color: #6B3A2A;
-  border-color: #e5e7eb;
+  border-color: #e5d5c8;
+  box-shadow: 0 1px 4px rgba(107, 58, 42, 0.08);
 }
 
 .category-pill-inactive:hover {
-  background-color: #F5E6D3;
-  border-color: #C9A84C;
+  background-color: #f5e6d3;
+  border-color: #c9a84c;
+  color: #5a3020;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 12px rgba(107, 58, 42, 0.15);
 }
 
-/* Active pill */
+/* ── Active state ─────────────────────────── */
 .category-pill-active {
-  background-color: #6B3A2A;
+  background: linear-gradient(135deg, #6B3A2A, #8B4A36);
   color: #ffffff;
-  border-color: #C9A84C;
+  border-color: #c9a84c;
+  box-shadow:
+    0 4px 14px rgba(107, 58, 42, 0.35),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  transform: translateY(-1px);
 }
 
+.category-pill-active:hover {
+  background: linear-gradient(135deg, #7a4232, #9a5540);
+  box-shadow:
+    0 6px 18px rgba(107, 58, 42, 0.4),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+/* ── Emoji icon ───────────────────────────── */
 .category-pill-emoji {
   font-size: 1rem;
   line-height: 1;
+  transition: transform 0.25s ease;
+}
+
+.category-pill:hover .category-pill-emoji {
+  transform: scale(1.2) rotate(-5deg);
+}
+
+.category-pill-active .category-pill-emoji {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
 }

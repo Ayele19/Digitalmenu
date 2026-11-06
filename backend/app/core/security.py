@@ -6,7 +6,13 @@ from passlib.context import CryptContext
 
 from app.config import settings
 
-_pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt has a hard 72-byte limit. Using truncate_error=False tells passlib
+# to silently truncate rather than raise a ValueError on longer passwords.
+_pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__truncate_error=False,
+)
 
 
 def create_access_token(data: dict) -> str:
